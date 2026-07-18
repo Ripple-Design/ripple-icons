@@ -4,19 +4,14 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [vue()],
   build: {
-    emptyOutDir: false,
     lib: {
-      entry: {
-        index: 'src/index.ts',
-        global: 'src/global.ts',
-      },
+      entry: 'src/index.ts',
+      name: 'index',
+      fileName: (format) => format === 'es' ? 'index.js' : 'index.cjs',
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
       external: ['vue'],
-      output: {
-        chunkFileNames: '_chunks/[name]-[hash].js',
-      },
     },
   },
 })
