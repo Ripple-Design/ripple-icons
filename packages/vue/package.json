@@ -1,0 +1,52 @@
+{
+  "name": "@ripple-design/icons-vue",
+  "version": "0.1.0",
+  "description": "Vue 3 components generated from Ripple Icons SVG assets.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./global": {
+      "types": "./dist/global.d.ts",
+      "import": "./dist/global.js",
+      "require": "./dist/global.cjs"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js",
+      "require": "./dist/*.cjs"
+    }
+  },
+  "scripts": {
+    "generate": "node ./scripts/generate-icons.mjs",
+    "build": "npm run generate && npm run build:bundle",
+    "build:bundle": "node ./scripts/build.mjs",
+    "prepack": "npm run build"
+  },
+  "peerDependencies": {
+    "vue": "^3.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/compiler-sfc": "^3.5.40",
+    "rolldown": "^1.2.0",
+    "typescript": "~5.8.0",
+    "vite": "^8.1.5",
+    "vue": "^3.5.0",
+    "vue-tsc": "^3.3.7"
+  },
+  "dependencies": {
+    "rollup-plugin-vue": "^6.0.0"
+  }
+}

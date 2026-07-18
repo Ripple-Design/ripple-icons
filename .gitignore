@@ -3,3 +3,6 @@ update/venv/
 venv/
 update/__pycache__/
 __pycache__/
+/packages/vue/src/components/
+
+.npmrc

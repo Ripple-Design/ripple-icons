@@ -8,12 +8,6 @@ The icons are designed under the [Material Design Guidelines](https://material.i
 
 We’d love to support your icon needs! Please submit your request here on GitHub as an issue.
 
-Please note that Google Fonts does not accept user submissions of finished icon designs! There are fairly strict  guidelines for Material icons, plus Google has upstream source files from which this repo is generated. Therefore, Google does not accept pull requests for icon files (whether new icon suggestions, or fixes for existing icons). Concepts are appreciated—just don’t design SVGs and submit them via pull request.
-
-However, users are perfectly welcome to point at outside files or images as examples—for the kind of thing they want, but they won’t just be taken “as is.” This works especially well if you have multiple examples for a single icon, to help us understand the “essence” of the idea.
-
-> For example, there is a fairly universal conceptual logo/icon for “agender,” so if you were proposing Google add an agender icon in the Material style, either mentioning that, or pointing at https://www.google.com/search?q=agender+icon would be a helpful tip.
-
 ### Third-party logos
 
 Currently, Google does not include 3rd-party logos among the Material Symbols or Material Icons due to legal reasons. Some 3rd-party logos that were included in the past have since been removed.
@@ -45,31 +39,6 @@ Google does not currently maintain the npm package for this repo, past v3 (2016)
 - Only SVGs
 - Optimizes SVGs using SVGO
 
-## Material Symbols
-
-These newer icons can be browsed in a more user-friendly way at https://fonts.google.com/icons. Use the popdown menu near top left to choose between the two sets; Material Symbols is the default.
-
-These icons were built/designed as variable fonts first (based on the 24 px designs from Material Icons). There are three separate Material Symbols variable fonts, which also have static icons available (but those do not have all the variations available, as that would be hundreds of styles):
-- Outlined
-- Rounded
-- Sharp
-- Note that although there is no separate Filled font, the Fill axis allows access to filled styles, in all three fonts. It can also be manipulated for an animated fill effect, to indicate user selection.
-
-Each of the fonts has these design axes, which can be varied in CSS, or in many more modern design apps:
-- Optical Size (opsz) from 20 to 48 px. The default is 24.
-- Weight from 100 (Thin) to 700 (Bold). Regular is 400.
-- Grade from -50 to 200. The default is 0 (zero). -50 is suggested for reversed contrast (e.g. white icons on black background)
-- Fill from 0 to 100. The default is 0 (zero).
-
-The following directories in this repo contain specifically Material Symbols (not Material Icons) content:
-- symbols
-- variablefont
-
-What is currently _not_ available in Material Symbols?
-- only the 20 and 24 px versions are designed with perfect pixel-grid alignment
-- the only pre-made fonts are the variable fonts
-- there are no two-tone icons
-
 ## Material Icons
 
 The icons can be browsed in a more user-friendly way at https://fonts.google.com/icons?icon.set=Material+Icons
@@ -95,24 +64,6 @@ What is currently _not_ available in Material Icons?
 - a means to animate Fill transitions
 - new icons (since updates were halted in 2022)
 
-## Material Icons update history
-
-### 4.0.0 Update
-* 2020 Aug 31
-* Restructured repository, updated assets.
-
-### 3.0.1 Update
-* 2016 Sep 01
-* Changed license in package.json.
-* Added missing device symbol sprites.
-
-### 3.0.0 Update
-* 2016 Aug 25
-* License change to Apache 2.0!
-
-### 2.0
-* 2016 May 28
-
 ## Getting Started
 
 Read the [developer guide](https://developers.google.com/fonts/docs/material_icons) on how to use the material design icons in your project.
@@ -126,12 +77,7 @@ The `font` and `variablefont` folders contain pre-generated font files that can 
       rel="stylesheet">
 ```
 
-```html
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      rel="stylesheet">
-```
-Read more on [Material Symbols](https://developers.google.com/fonts/docs/material_symbols/) or [Material Icons](https://developers.google.com/fonts/docs/material_icons/) in the Google Fonts developer guide.
-
+Read more on [Material Icons](https://developers.google.com/fonts/docs/material_icons/) in the Google Fonts developer guide.
 
 ## License
 
