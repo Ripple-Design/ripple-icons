@@ -1,6 +1,7 @@
-import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { optimize } from 'svgo'
 
 const scriptDir = fileURLToPath(new URL('.', import.meta.url))
 const packageRoot = path.resolve(scriptDir, '..')
@@ -16,7 +17,6 @@ const STYLE_SUFFIX = {
   twotone: 'TwoTone',
 }
 
-await rm(distRoot, { recursive: true, force: true })
 await mkdir(distRoot, { recursive: true })
 
 const seen = new Set()
@@ -41,7 +41,17 @@ for (const category of await getDirectories(sourceRoot)) {
       seen.add(key)
 
       const rawSvg = await readFile(path.join(iconDir, file.name), 'utf8')
-      const pathData = extractPathData(rawSvg)
+      const optimizedSvg = optimize(rawSvg, {
+        multipass: true,
+        plugins: [
+          'preset-default',
+          'convertShapeToPath',
+          'convertPathData',
+          'removeDimensions',
+        ],
+      }).data
+
+      const pathData = extractPathData(optimizedSvg)
       exports.push({ name: iconName, pathData })
     }
   }
@@ -70,8 +80,11 @@ await writeFile(
 console.log(`Generated ${exports.length} path exports into dist/`)
 
 function extractPathData(svg) {
-  const matches = [...svg.matchAll(/<path\b[^>]*\bd="([^"]+)"[^>]*\/?>(?:<\/path>)?/g)]
-  return matches.map((match) => match[1]).join(' ')
+  const matches = [...svg.matchAll(/<path\b[^>]*\bd="([^"]+)"[^>]*\/?>/g)]
+  const filtered = matches
+    .map((match) => match[1])
+    .filter((d) => d !== 'M0 0h24v24H0z' && d !== 'M0 0h24v24H0V0z')
+  return filtered.join(' ')
 }
 
 function toPascalCase(value) {
