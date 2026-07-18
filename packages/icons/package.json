@@ -1,0 +1,30 @@
+{
+  "name": "@ripple-design/icons",
+  "version": "1.0.1",
+  "description": "Framework-agnostic icon path data generated from Ripple Icons SVG assets.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "generate": "node ./scripts/generate-icons.mjs",
+    "build": "npm run generate && npm run build:bundle",
+    "build:bundle": "node ./scripts/build.mjs",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "svgo": "^4.0.2"
+  }
+}
