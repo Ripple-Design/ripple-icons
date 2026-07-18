@@ -80,11 +80,16 @@ await writeFile(
 console.log(`Generated ${exports.length} path exports into dist/`)
 
 function extractPathData(svg) {
-  const matches = [...svg.matchAll(/<path\b[^>]*\bd="([^"]+)"[^>]*\/?>/g)]
+  const matches = [...svg.matchAll(/<path\b[^>]*\bd="([^"]+)"[^>]*>/g)]
   const filtered = matches
+    .filter((match) => !/fill="none"/.test(match[0]))
     .map((match) => match[1])
-    .filter((d) => d !== 'M0 0h24v24H0z' && d !== 'M0 0h24v24H0V0z')
+    .filter((d) => !isCanvasPath(d))
   return filtered.join(' ')
+}
+
+function isCanvasPath(d) {
+  return d === 'M0 0h24v24H0z' || d === 'M0 0h24v24H0V0z' || d === 'M0 0h24v24H0zm' || d === 'M.21.16h24v24h-24z'
 }
 
 function toPascalCase(value) {
