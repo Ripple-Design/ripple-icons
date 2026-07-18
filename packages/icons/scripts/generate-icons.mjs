@@ -45,14 +45,11 @@ for (const category of await getDirectories(sourceRoot)) {
         multipass: true,
         plugins: [
           'preset-default',
-          'convertShapeToPath',
-          'convertPathData',
           'removeDimensions',
         ],
       }).data
 
-      const pathData = extractPathData(optimizedSvg)
-      exports.push({ name: iconName, pathData })
+      exports.push({ name: iconName, svg: optimizedSvg })
     }
   }
 }
@@ -61,7 +58,7 @@ exports.sort((a, b) => a.name.localeCompare(b.name))
 
 await writeFile(
   path.join(distRoot, 'index.js'),
-  exports.map(({ name, pathData }) => `export const ${name} = ${JSON.stringify(pathData)}`).join('\n') + '\n',
+  exports.map(({ name, svg }) => `export const ${name} = ${JSON.stringify(svg)}`).join('\n') + '\n',
   'utf8',
 )
 
@@ -73,24 +70,11 @@ await writeFile(
 
 await writeFile(
   path.join(distRoot, 'index.cjs'),
-  exports.map(({ name, pathData }) => `exports.${name} = ${JSON.stringify(pathData)}`).join('\n') + '\n',
+  exports.map(({ name, svg }) => `exports.${name} = ${JSON.stringify(svg)}`).join('\n') + '\n',
   'utf8',
 )
 
-console.log(`Generated ${exports.length} path exports into dist/`)
-
-function extractPathData(svg) {
-  const matches = [...svg.matchAll(/<path\b[^>]*\bd="([^"]+)"[^>]*>/g)]
-  const filtered = matches
-    .filter((match) => !/fill="none"/.test(match[0]))
-    .map((match) => match[1])
-    .filter((d) => !isCanvasPath(d))
-  return filtered.join(' ')
-}
-
-function isCanvasPath(d) {
-  return d === 'M0 0h24v24H0z' || d === 'M0 0h24v24H0V0z' || d === 'M0 0h24v24H0zm' || d === 'M.21.16h24v24h-24z'
-}
+console.log(`Generated ${exports.length} optimized SVG exports into dist/`)
 
 function toPascalCase(value) {
   return value
