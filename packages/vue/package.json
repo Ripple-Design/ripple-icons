@@ -1,6 +1,6 @@
 {
     "name": "@ripple-design/icons-vue",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Vue 3 components generated from Ripple Icons SVG assets.",
     "license": "Apache-2.0",
     "type": "module",
@@ -16,11 +16,6 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.js",
             "require": "./dist/index.cjs"
-        },
-        "./global": {
-            "types": "./dist/global.d.ts",
-            "import": "./dist/global.js",
-            "require": "./dist/global.cjs"
         }
     },
     "publishConfig": {
