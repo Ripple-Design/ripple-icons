@@ -64,7 +64,12 @@ await writeFile(
 
 await writeFile(
   path.join(distRoot, 'index.d.ts'),
-  exports.map(({ name }) => `export declare const ${name}: string`).join('\n') + '\n',
+  [
+    'export type RIIcon = string & { readonly __riIconBrand: unique symbol }',
+    '',
+    ...exports.map(({ name }) => `export declare const ${name}: RIIcon`),
+    '',
+  ].join('\n'),
   'utf8',
 )
 
