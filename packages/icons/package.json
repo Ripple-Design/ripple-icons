@@ -1,10 +1,13 @@
 {
   "name": "@ripple-design/icons",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "Framework-agnostic icon path data generated from Ripple Icons SVG assets.",
   "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist"
   ],
@@ -16,6 +19,35 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./all": {
+      "types": "./dist/all.d.ts",
+      "import": "./dist/all.js"
+    },
+    "./filled": {
+      "types": "./dist/filled/index.d.ts",
+      "import": "./dist/filled/index.js"
+    },
+    "./outlined": {
+      "types": "./dist/outlined/index.d.ts",
+      "import": "./dist/outlined/index.js"
+    },
+    "./rounded": {
+      "types": "./dist/rounded/index.d.ts",
+      "import": "./dist/rounded/index.js"
+    },
+    "./sharp": {
+      "types": "./dist/sharp/index.d.ts",
+      "import": "./dist/sharp/index.js"
+    },
+    "./twotone": {
+      "types": "./dist/twotone/index.d.ts",
+      "import": "./dist/twotone/index.js"
+    },
+    "./package.json": "./package.json",
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js"
     }
   },
   "scripts": {

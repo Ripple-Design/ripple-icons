@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { optimize } from 'svgo'
@@ -17,10 +17,13 @@ const STYLE_SUFFIX = {
   twotone: 'TwoTone',
 }
 
+const STYLES = Object.keys(STYLE_SUFFIX)
+
+await rm(distRoot, { recursive: true, force: true })
 await mkdir(distRoot, { recursive: true })
 
 const seen = new Set()
-const exports = []
+const icons = []
 
 for (const category of await getDirectories(sourceRoot)) {
   const categoryDir = path.join(sourceRoot, category)
@@ -49,37 +52,87 @@ for (const category of await getDirectories(sourceRoot)) {
         ],
       }).data
 
-      exports.push({ name: iconName, svg: optimizedSvg })
+      icons.push({ name: iconName, style, slug: icon, svg: optimizedSvg })
     }
   }
 }
 
-exports.sort((a, b) => a.name.localeCompare(b.name))
+icons.sort((a, b) => a.name.localeCompare(b.name))
 
-await writeFile(
+const rootLines = []
+const allLines = []
+const styleLines = Object.fromEntries(STYLES.map((style) => [style, []]))
+const files = []
+
+for (const { name, style, slug, svg } of icons) {
+  rootLines.push(`export { ${name} } from "./${style}/${slug}.js"`)
+  allLines.push(`export { ${name} } from "./${style}/${slug}.js"`)
+  styleLines[style].push(`export { ${name} } from "./${slug}.js"`)
+
+  files.push([
+    path.join(distRoot, style, `${slug}.js`),
+    `export const ${name} = ${JSON.stringify(svg)}\n`,
+  ])
+  files.push([
+    path.join(distRoot, style, `${slug}.d.ts`),
+    `import type { RIIcon } from "../types.js"\nexport declare const ${name}: RIIcon\n`,
+  ])
+}
+
+files.push([
+  path.join(distRoot, 'types.d.ts'),
+  'export type RIIcon = string & { readonly __riIconBrand: unique symbol }\n',
+])
+
+files.push([
   path.join(distRoot, 'index.js'),
-  exports.map(({ name, svg }) => `export const ${name} = ${JSON.stringify(svg)}`).join('\n') + '\n',
-  'utf8',
-)
-
-await writeFile(
+  rootLines.join('\n') + '\n',
+])
+files.push([
   path.join(distRoot, 'index.d.ts'),
-  [
-    'export type RIIcon = string & { readonly __riIconBrand: unique symbol }',
-    '',
-    ...exports.map(({ name }) => `export declare const ${name}: RIIcon`),
-    '',
-  ].join('\n'),
-  'utf8',
-)
-
-await writeFile(
+  `export type { RIIcon } from "./types.js"\n\n${rootLines.join('\n')}\n`,
+])
+files.push([
   path.join(distRoot, 'index.cjs'),
-  exports.map(({ name, svg }) => `exports.${name} = ${JSON.stringify(svg)}`).join('\n') + '\n',
-  'utf8',
-)
+  icons.map(({ name, svg }) => `exports.${name} = ${JSON.stringify(svg)}`).join('\n') + '\n',
+])
 
-console.log(`Generated ${exports.length} optimized SVG exports into dist/`)
+// The "all" entry must be its own module (not a re-export of index.js) so that a
+// namespace import of it does not get merged with the root barrel's static imports.
+files.push([
+  path.join(distRoot, 'all.js'),
+  allLines.join('\n') + '\n',
+])
+files.push([
+  path.join(distRoot, 'all.d.ts'),
+  `export type { RIIcon } from "./types.js"\n\n${allLines.join('\n')}\n`,
+])
+
+for (const style of STYLES) {
+  await mkdir(path.join(distRoot, style), { recursive: true })
+
+  files.push([
+    path.join(distRoot, style, 'index.js'),
+    styleLines[style].join('\n') + '\n',
+  ])
+  files.push([
+    path.join(distRoot, style, 'index.d.ts'),
+    styleLines[style].join('\n') + '\n',
+  ])
+}
+
+await writeBatches(files, 256)
+
+console.log(`Generated ${icons.length} optimized SVG exports into dist/`)
+console.log(`Wrote ${files.length} files (per-icon modules, style barrels, root/all barrels)`)
+
+async function writeBatches(entries, batchSize) {
+  for (let index = 0; index < entries.length; index += batchSize) {
+    await Promise.all(
+      entries.slice(index, index + batchSize).map(([file, content]) => writeFile(file, content, 'utf8')),
+    )
+  }
+}
 
 function toPascalCase(value) {
   return value

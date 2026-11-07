@@ -1,0 +1,62 @@
+name: Build and Publish
+
+on:
+    workflow_dispatch:
+    push:
+        tags:
+            - "icons-v*"
+
+jobs:
+    publish:
+        name: Build & Publish to npm
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+
+        steps:
+            - name: Checkout Repo
+              uses: actions/checkout@v4
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10.2.0
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: "pnpm"
+                  cache-dependency-path: packages/icons/pnpm-lock.yaml
+                  registry-url: "https://registry.npmjs.org"
+                  scope: "@ripple-design"
+
+            - name: Upgrade npm
+              run: npm install -g npm@latest
+
+            - name: Verify Tag Matches Version
+              if: github.ref_type == 'tag'
+              shell: bash
+              env:
+                  REF_NAME: ${{ github.ref_name }}
+              run: |
+                  tag_version="${REF_NAME#icons-v}"
+                  package_version="$(node -p "require('./packages/icons/package.json').version")"
+
+                  if [[ "$tag_version" != "$package_version" ]]; then
+                      echo "::error::Tag $REF_NAME points to $tag_version, but @ripple-design/icons is at $package_version"
+                      exit 1
+                  fi
+
+            - name: Install Dependencies
+              working-directory: packages/icons
+              run: pnpm install --frozen-lockfile
+
+            - name: Build Package
+              working-directory: packages/icons
+              run: pnpm run build
+
+            - name: Stage Package
+              working-directory: packages/icons
+              run: npm stage publish . --provenance
